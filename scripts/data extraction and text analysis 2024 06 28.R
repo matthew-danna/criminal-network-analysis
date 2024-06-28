@@ -53,6 +53,7 @@ setwd("/Users/matthewdanna/Downloads/temp") #Mac
 
 # create empty table
 my.data <- data.frame()
+# create of list of documents
 file.list <- list.files(pattern = "*.pdf", recursive = TRUE)
 
 # iterate over each file to generate the data
@@ -94,7 +95,24 @@ my.clean.words <- no.stop.words %>% anti_join(tmp.clean.words, by = "word")
 skrrrahh(0)
 
 #####
-##### Step 4: WORDCLOUDS
+##### Step 4: SENTIMENT
+#####
+my.sentiment <- my.clean.words %>% inner_join(get_sentiments("bing"))
+skrrrahh(0)
+
+#####
+##### Step 5: COUNT WORDS
+#####
+counts.words.sentiments <- my.sentiment %>% count(word, sentiment, sort = TRUE)
+top.my.clean.words.sentiment <- subset(counts.words.sentiments, 
+                                       n >= quantile(counts.words.sentiments$n, 0.95))
+ggplot(top.my.clean.words.sentiment, aes(x= reorder(word, n), y=n, fill= sentiment)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip()
+skrrrahh(0)
+
+#####
+##### Step 6: WORDCLOUDS
 #####
 # option 1
 wordcloud(my.clean.words$word)
@@ -104,22 +122,6 @@ names(counts.word) <- c("word","freq")
 wordcloud2(data = counts.word, size = 1.0, 
            color = rep_len(c("green","blue","red"), nrow(counts.word)), 
            shape = circle)
-
-#####
-##### Step 5: SENTIMENT
-#####
-my.sentiment <- my.clean.words %>% inner_join(get_sentiments("bing"))
-skrrrahh(0)
-
-#####
-##### Step 6: COUNT WORDS
-#####
-counts.words.sentiments <- my.sentiment %>% count(word, sentiment, sort = TRUE)
-top.my.clean.words.sentiment <- subset(counts.words.sentiments, 
-                                       n >= quantile(counts.words.sentiments$n, 0.9))
-ggplot(top.my.clean.words.sentiment, aes(x= reorder(word, n), y=n, fill= sentiment)) + 
-  geom_bar(stat = "identity") + 
-  coord_flip()
 skrrrahh(0)
 
 #####
@@ -130,7 +132,7 @@ wordpairs.my.words <- my.clean.words %>%
 
 set.seed(611)
 pairs.plot <- wordpairs.my.words %>%
-  filter(n >= 20) %>% # EXPERIMENT WITH THIS!
+  filter(n >= 125) %>% # EXPERIMENT WITH THIS!
   graph_from_data_frame() %>%
   ggraph(layout = "fr") +
   geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour = "steelblue") +
@@ -157,13 +159,13 @@ words_topic <- my.clean.words %>%
 reviewDTM <- words_topic %>%
   cast_dtm(file, word, n)
 
-reviewLDA <- LDA(reviewDTM, k = 5, control = list(seed = 347)) # experiment with the number of topics
+reviewLDA <- LDA(reviewDTM, k = 4, control = list(seed = 347)) # experiment with the number of topics
 
 topics <- tidy(reviewLDA, matrix = "beta")
 
 topTerms <- topics %>%
   group_by(topic) %>%
-  top_n(12, beta) %>% # change this accordingly for more or less words
+  top_n(24, beta) %>% # change this accordingly for more or less words
   ungroup() %>%
   arrange(topic, -beta) %>%
   mutate(order = rev(row_number()))
