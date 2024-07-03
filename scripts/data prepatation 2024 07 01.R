@@ -1,11 +1,11 @@
 library(tidyverse)
 
 # get data
-currency <- read.csv("/Users/matthewdanna/Downloads/currency-seizures-fy21-fy24-may.csv",
+currency <- read.csv("/Users/USER NAME HERE/Downloads/currency-seizures-fy21-fy24-may.csv",
                      stringsAsFactors = FALSE)
-weapons <- read.csv("/Users/matthewdanna/Downloads/weapons-ammunition-seizures-fy21-fy24-may.csv",
+weapons <- read.csv("/Users/USER NAME HERE/Downloads/weapons-ammunition-seizures-fy21-fy24-may.csv",
                     stringsAsFactors = FALSE)
-drugs <- read.csv("/Users/matthewdanna/Downloads/nationwide-drugs-fy21-fy24-may.csv",
+drugs <- read.csv("/Users/USER NAME HERE/Downloads/nationwide-drugs-fy21-fy24-may.csv",
                   stringsAsFactors = FALSE)
 
 ##### currency data
@@ -102,7 +102,7 @@ events <- events %>%
                          NOV = 11,
                          DEC = 12))
 
-write.csv(events, "/Users/matthewdanna/Downloads/events 2024 07 01.csv",
+write.csv(events, "/Users/USER NAME HERE/Downloads/events 2024 07 01.csv",
           row.names = FALSE)
 
 
